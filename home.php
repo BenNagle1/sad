@@ -1,13 +1,5 @@
 <?php 
 session_start(); 
-include "db.inc.php";
-
-$username = " ";
-
-if($_SERVER["REQUEST_METHOD"] == "POST") {
-      
-    $username = trim($_POST['username']);
-}
 
 ?>
 <html>
@@ -30,7 +22,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
 <body>
 
 <main>
-   <h3>Welcome, <h3><?php echo "$username";?>
+<h2>Welcome, <?php echo $_SESSION['username']; ?>!</h2>
 
 </main>
 
