@@ -7,6 +7,7 @@ session_start();
 <head>
 <title>Welcome - Home</title>
  <link rel="stylesheet" type="text/css" href="nav_bar.css">
+ <link rel="stylesheet" type="text/css" href="home.css">
 
 </head>
 <header>
@@ -14,7 +15,7 @@ session_start();
 <div class="nav_bar">
   <li><a class="current" href="">Home</a></li>
   <li><a href="">Account</a></li>
-  <li><a href="#">Signout</a></li>
+  <li><a href="signout.php">Sign out</a></li>
   </div>
 </ul>
 </header>

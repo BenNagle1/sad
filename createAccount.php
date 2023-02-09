@@ -6,7 +6,8 @@ $username = "";
 $password = "";
 $confirm_Password = "";
 $username_err =  "";
-$password_err = "";
+$password_err1 = "";
+$password_err2 = "";
 $error = false;
 
 function generateSalt($length) {
@@ -40,17 +41,17 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     if ($user_check) {
         if ($user_check['username'] === $username) {
             $error = true;
-            $username_err = "Username already exists in our records";
+            $username_err = "The username you entered already exists in our records.";
         }
     }
 
     if (strlen($password) < 8) {
         $error = true;
-        $password_err = "Password must have at least 8 characters.";
+        $password_err1 = "Password must have at least 8 characters.";
     }
 
     if ($password != $confirm_Password) {
-        $password_err = "Passwords do not match";
+        $password_err2 = "The passwords you entered do not match.";
         $error = true;
     }
 
@@ -94,6 +95,13 @@ mysqli_close($db);
 	
 	<input type="submit" value = "Create Account"/>
     <p>Already have an account? <a href="login.php">Login here</a>.</p>
+    <div class="error">
+    <?php
+      echo "$password_err1   \n";
+      echo "$username_err \n";
+      echo "$password_err2  \n";
+    ?>
+    </div>
      </form>
     </div>    
 </body>

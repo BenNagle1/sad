@@ -1,6 +1,9 @@
 <?php 
 include 'db.inc.php';
 session_start();
+error_reporting(E_ERROR);
+
+$error=false;
 
 function hash_password($password, $salt) {
     $count = 1000;
@@ -24,12 +27,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
     $hashed_password = $user['hashed_password'];
 
     $hash_enteredPassword = hash_password($password, $salt);
-
-    echo "Password: $password    "; 
-    echo "Hashed Password: $hashed_password     "; 
-    echo "Entered hashed Password: $hash_enteredPassword     ";
-    echo "Salt: $salt    ";
-	  
+ 
     if (mysqli_num_rows($result) == 1) {
         
         if ($hashed_password == $hash_enteredPassword) {
@@ -38,10 +36,10 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
         
             header("Location: home.php");
         } else {
-            echo "Password or username is incorrect or not stored in our records";
+            $error=true;
         }
     } else {
-        echo "Password or username is incorrect or not stored in our records";
+        $error=true;
     }
 }
                  
@@ -67,7 +65,13 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
 		
 		<input type="submit" value = "Login"/>
         <p>Don't have an account? <a href="createAccount.php">Creat Account here</a>.</p>
-		
+        <div class="error">
+        <?php
+        if($error==true){
+        echo "The username '$username' and password could not be authenticated at the moment";
+        }
+         ?>
+    </div>
      </form>
     </div>    
 </body>
