@@ -1,42 +1,40 @@
 <?php 
 include 'db.inc.php';
 session_start();
-$key = 'thebestsecretkey';
 
-function encrypt($input, $key) {
-    $encryption_key = base64_decode($key);
-    $iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length('aes-128-cbc'));
-    $encrypted = openssl_encrypt($input, 'aes-128-cbc', $encryption_key, 0, $iv);
-    return base64_encode($encrypted . '::' . $iv);
-}
-
-function decrypt($input, $key) {
-    $encryption_key = base64_decode($key);
-    list($encrypted_data, $iv) = array_pad(explode('::', base64_decode($input), 2), 2, null);
-    return openssl_decrypt($encrypted_data, 'aes-128-cbc', $encryption_key, 0, $iv);
+function hash_password($password, $salt) {
+    $count = 1000;
+    $salted_password = $password . $salt;
+    $hash = hash('sha256', $salted_password);
+    for ($i = 0; $i < $count; $i++) {
+        $hash = hash("sha256", $hash);
+    }
+    return $hash;
 }
 
 if($_SERVER["REQUEST_METHOD"] == "POST") {
       
     $username = trim($_POST['username']);
     $password = trim($_POST['password']);
-	  
-    $sql = "SELECT * FROM users WHERE username='$username'";
-    echo "Username: " . $username . "<br>";
-    echo "Encrypted username: " . $username_encrypted . "<br>";
-        echo "Password: " . $password . "<br>";
-    echo "Encrypted password: " . $password_encrypted . "<br>";
-    echo "SQL: " . $sql . "<br>";
+
+    $sql = "SELECT salt, hashed_password FROM users WHERE username='$username'";
     $result = mysqli_query($db, $sql);
+    $user = mysqli_fetch_assoc($result);
+    $salt = $user['salt'];
+    $hashed_password = $user['hashed_password'];
+
+    $hash_enteredPassword = hash_password($password, $salt);
+
+    echo "Password: $password    "; 
+    echo "Hashed Password: $hashed_password     "; 
+    echo "Entered hashed Password: $hash_enteredPassword     ";
+    echo "Salt: $salt    ";
 	  
     if (mysqli_num_rows($result) == 1) {
-        $row = mysqli_fetch_assoc($result);
-        $db_username = decrypt($row['username'], $key);
-        $db_password = decrypt($row['password'], $key);
         
-        if ($username == $db_username && $password == $db_password) {
+        if ($hashed_password == $hash_enteredPassword) {
             $_SESSION['username'] = $username;
-            $_SESSION['id'] = $row['id'];
+            $_SESSION['id'] = $user['id'];
         
             header("Location: home.php");
         } else {
@@ -65,7 +63,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
 		<label for="Username"></label>
 		<input type="text" name="username" id="username" required placeholder="Username" title="Please enter a username"/><br>
 		<label for="Password"></label>
-		<input type="text" name="password" id="password" required placeholder="Password" title="Please enter a password"/><br>
+		<input type="password" name="password" id="password" required placeholder="Password" title="Please enter a password"/><br>
 		
 		<input type="submit" value = "Login"/>
         <p>Don't have an account? <a href="createAccount.php">Creat Account here</a>.</p>
