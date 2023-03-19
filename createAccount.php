@@ -1,6 +1,8 @@
 <?php
 session_start(); 
 include "db.inc.php";
+require_once 'functions.php';
+
 
 $username = "";
 $password = "";
@@ -10,23 +12,7 @@ $password_err1 = "";
 $password_err2 = "";
 $error = false;
 
-function generateSalt($length) {
-    $salt = '';
-    for ($iteration = 0; $iteration < $length; $iteration++) {
-        $salt .= chr(mt_rand(33, 126));
-    }
-    return $salt;
-}
 
-function hash_password($password, $salt) {
-    $count = 1000;
-    $salted_password = $password . $salt;
-    $hash = hash('sha256', $salted_password);
-    for ($i = 0; $i < $count; $i++) {
-        $hash = hash("sha256", $hash);
-    }
-    return $hash;
-}
 
 if($_SERVER["REQUEST_METHOD"] == "POST"){
 
@@ -34,8 +20,11 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     $password = mysqli_real_escape_string($db, $_POST['password']);
     $confirm_Password = mysqli_real_escape_string($db, $_POST['confirmpassword']);
 
-    $user_validate = "SELECT * FROM users WHERE username='$username' LIMIT 1";
-    $result = mysqli_query($db, $user_validate);
+    $user_validate = "SELECT * FROM users WHERE username=? LIMIT 1";
+    $statement= mysqli_prepare($db, $user_validate);
+    mysqli_stmt_bind_param($statement, "s", $username);
+    mysqli_stmt_execute($statement);
+    $result = mysqli_stmt_get_result($statement);
     $user_check = mysqli_fetch_assoc($result);
 
     if ($user_check) {
@@ -61,9 +50,12 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         $hashed_password = hash_password($password, $salt);
         $hashed_password = mysqli_real_escape_string($db, $hashed_password);
         $sql_query = "INSERT INTO users (`username`, `salt`, `hashed_password`) 
-        VALUES ('$username', '$salt','$hashed_password')";
+        VALUES (?, ?, ?)";
+        $statement= mysqli_prepare($db, $sql_query);
+        mysqli_stmt_bind_param($statement, "sss", $username, $salt, $hashed_password);
+        mysqli_stmt_execute($statement);
 
-        if (mysqli_query($db, $sql_query)) {
+        if (mysqli_stmt_affected_rows($statement) > 0) {
             header("location: login.php");
         } else {
             echo "Error: " . $sql_query . "<br>" . mysqli_error($db);
