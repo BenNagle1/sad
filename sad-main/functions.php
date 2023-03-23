@@ -17,4 +17,18 @@ function hash_password($password, $salt) {
     return $hash;
 }
 
+
+function get_random_string($length = 10) {
+    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    $string = '';
+    for ($i = 0; $i < $length; $i++) {
+        $string .= $characters[rand(0, strlen($characters) - 1)];
+    }
+    return $string;
+}
+
+
+
+
+
 ?>

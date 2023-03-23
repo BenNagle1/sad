@@ -6,8 +6,8 @@ session_start();
 error_reporting(E_ERROR);
 
 $error = false;
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+$_SESSION['token'] = get_random_string(60);
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_SESSION['token']) && isset($_POST['token']) && isset($_SESSION['token']) == isset($_POST['token']) ) {
     $user_agent = $_SERVER['HTTP_USER_AGENT'];
     if (isset($_SESSION['lockout']) && time() < $_SESSION['lockout']) {
         $error = true;
@@ -90,7 +90,7 @@ function log_login_attempt($username, $status, $ip_address) {
 
 
 
-         
+
 
 
 
@@ -104,7 +104,24 @@ function log_login_attempt($username, $status, $ip_address) {
     <link rel="stylesheet" type="text/css" href="login.css">
 </head>
 <body>
+    <script>
+window.addEventListener("unload", function() {
+  var cookies = document.cookie.split(";");
+  for (var i = 0; i < cookies.length; i++) {
+    var cookie = cookies[i];
+    var eqPos = cookie.indexOf("=");
+    var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+    document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+  }
+});
+</script>
+
     <form action="login.php" method="POST">
+
+
+
+
+
         <div class="login">
             <h1>Welcome</h1>
             <legend>Login to your account</legend>
@@ -112,6 +129,9 @@ function log_login_attempt($username, $status, $ip_address) {
             <input type="text" name="username" id="username" required placeholder="Username" title="Please enter a username"/><br>
             <label for="Password"></label>
             <input type="password" name="password" id="password" required placeholder="Password" title="Please enter a password"/><br>
+
+
+            <input type="hidden" name = "token" value="<?=$_SESSION['token']?>"><br>
 
             <input type="submit" value="Login"/>
             <p>Don't have an account? <a href="createAccount.php">Create Account here</a>.</p>
@@ -128,6 +148,9 @@ function log_login_attempt($username, $status, $ip_address) {
                 ?>
             </div>
         </div>
+
+
+
     </form>
 </body>
 </html>
