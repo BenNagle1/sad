@@ -36,7 +36,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_SESSION['token']) && isset($
                 log_login_attempt($username, 'success', $_SERVER['REMOTE_ADDR'], $user_agent);
 
                 if ($username === 'ADMIN') {
-                    header("Location: login_attempts.php");
+                    header("Location: admin_home.php");
                 } else {
                     $_SESSION['username'] = $username;
                     $_SESSION['user_id'] = $user['id'];

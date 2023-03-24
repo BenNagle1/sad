@@ -1,14 +1,10 @@
 <?php 
+
+
 header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
 header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
 
-if ($_SERVER['HTTP_CACHE_CONTROL'] == 'max-age=0' || $_SERVER['HTTP_CACHE_CONTROL'] == 'no-cache') {
-  // Fresh page request
-} else {
-  // Cached page request, redirect to login page or another appropriate page
-  header('Location: login.php');
-  exit;
-}
+
 
 session_start();
 if(isset($_SESSION['username']) && $_SESSION['username'] === 'ADMIN') {

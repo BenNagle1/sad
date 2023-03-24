@@ -32,6 +32,10 @@ function verify_password($new_password, $hashed_password, $salt) {
     return $new_password_hash === $hashed_password;
 }
 
+function xss_filter($untrusted_input){
+    
+
+}
 
 
 

@@ -16,6 +16,7 @@ $password_err1 = "";
 $password_err2 = "";
 $password_err3 = "";
 $error = false;
+
 if (isset($_SESSION['user_id'])) {
     $user_id = $_SESSION['user_id'];
     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['change_password'])) {
