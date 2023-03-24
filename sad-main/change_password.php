@@ -2,6 +2,7 @@
 session_start(); 
 include "db.inc.php"; 
 require_once 'functions.php'; 
+include 'tracker.php';
 
 if (!isset($_SESSION['username'])) { // Chekcs if the user is logged in, if not redirect to login page
     header("Location: login.php");
@@ -15,16 +16,17 @@ $username_err =  "";
 $password_err1 = "";
 $password_err2 = "";
 $password_err3 = "";
+$password_err4 = "";
 $error = false;
 
 
 if (isset($_SESSION['user_id'])) { 
     $user_id = $_SESSION['user_id'];
-    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['change_password'])) { // Check if HTTP request is POST and form has been submitted
-        if (isset($_POST['change_password'])) { // Check if the form form has been submitted (user clicks change password button)
-            $current_password = mysqli_real_escape_string($db, $_POST['current_password']); 
-            $new_password = mysqli_real_escape_string($db, $_POST['new_password']); 
-            $confirm_password = mysqli_real_escape_string($db, $_POST['confirm_password']); 
+    if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['change_password'])) { // Check if HTTP request is GET as per project requirments and form has been submitted
+        if (isset($_GET['change_password'])) { // Check if the form form has been submitted (user clicks change password button)
+            $current_password = mysqli_real_escape_string($db, $_GET['current_password']); 
+            $new_password = mysqli_real_escape_string($db, $_GET['new_password']); 
+            $confirm_password = mysqli_real_escape_string($db, $_GET['confirm_password']); 
     
             $user_id = $_SESSION['user_id'];
             //Select the user from the users table with the matching ID of logged in user 
@@ -46,10 +48,15 @@ if (isset($_SESSION['user_id'])) {
                 $error = true;
                 $password_err2 = "Your password must have at least 8 characters.";
             }
+
+            if (!password_check($new_password)) {
+                $error = true;
+                $password_err3 = "Password must have at least 8 characters, one uppercase letter, one lowercase letter, one number, and one special character.";
+            }
     
             //Check if the new passwords match
             if (trim($new_password) != trim($confirm_password)) { 
-                $password_err3 = "The new passwords you entered do not match.";
+                $password_err4 = "The new passwords you entered do not match.";
                 $error = true;
             }
     
@@ -65,7 +72,8 @@ if (isset($_SESSION['user_id'])) {
                 mysqli_stmt_execute($update_statement); 
     
                 if (mysqli_stmt_affected_rows($update_statement) > 0) { //Checkk if the update query affected at least one row. If not, displya the below error message. 
-                    header("location: login.php"); //redirect to login page 
+                    session_destroy();
+                    header("location: login.php?message=Password updated successfully"); //redirect to login page 
                 } else {
                     echo "Error: " . $update_query . "<br>" . mysqli_error($db);
                 }
@@ -90,7 +98,7 @@ mysqli_close($db);
     <link rel="stylesheet" type="text/css" href="login.css">
 </head>
 <body>
-<form action="change_password.php" method="post">
+<form action="change_password.php" method="get">
 <div class="login">
     <h2>Change Password</h2>
     <input type="password" name="current_password" required placeholder="Current Password" title="Please enter your current password" /><br>
@@ -99,11 +107,17 @@ mysqli_close($db);
     <input type="submit" name="change_password" value="Change Password" /><br>
     <a href="home.php"><input type="button" name="exit" value="Exit"class="exit"></a>
     <div class="error">
-        <?php
-            echo "$password_err1   \n";
-            echo "$password_err2   \n";
-            echo "$password_err3  \n";
-        ?>
+    <?php
+        $has_error = !empty($password_err1) || !empty($password_err2) || !empty($password_err3) || !empty($password_err4); //check if there is an error before proceeding to print
+        if ($has_error) {
+        echo "<div class='error'>";
+        echo "$password_err1   \n";
+        echo "$password_err2   \n";
+        echo "$password_err3  \n";
+        echo "$password_err4  \n";
+        echo "</div>";
+    }
+?>
     </div>
 </div>
 </form>

@@ -1,3 +1,4 @@
+</main>
 <?php 
 session_start(); 
 include 'tracker.php';
@@ -6,8 +7,6 @@ if (!isset($_SESSION['username'])) {
   header("Location: login.php");
   exit;
 }
-
-
 
 ?>
 <html>
@@ -21,8 +20,9 @@ if (!isset($_SESSION['username'])) {
 <header>
 <ul>
 <div class="nav_bar">
-  <li><a href="home.php">Home</a></li>
-  <li><a class="current" href="">About Us</a></li>
+<li><a class="current" href="">Home</a></li>
+  <li><a href="About_Us.php">About Us</a></li>
+  <li><a href="details.php">Project Details</a></li>
   <li><a href="change_password.php">Change Password</a></li>
   <li><a href="signout.php">Sign out</a></li>
   </div>
@@ -32,7 +32,12 @@ if (!isset($_SESSION['username'])) {
 <body>
 
 <main>
-<h2>About Us</h2>
+<h2>About Us:</h2>
+ <h3>Team members & Student ID</h3>
+Ben Nagle   C00247271
+
+<br><br>
+YinglongYu  C00253508
 
 </main>
 

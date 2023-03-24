@@ -1,8 +1,34 @@
+</main>
+<?php 
+session_start(); 
+include 'tracker.php';
 
+if (!isset($_SESSION['username'])) {
+  header("Location: login.php");
+  exit;
+}
+
+?>
 
 <!DOCTYPE html>
 <html>
 
+<title>Welcome - Home</title>
+ <link rel="stylesheet" type="text/css" href="nav_bar.css">
+ <link rel="stylesheet" type="text/css" href="home.css">
+
+</head>
+<header>
+<ul>
+<div class="nav_bar">
+  <li><a class="current" href="">Home</a></li>
+  <li><a href="About_Us.php">About Us</a></li>
+  <li><a href="details.php">Project Details</a></li>
+  <li><a href="change_password.php">Change Password</a></li>
+  <li><a href="signout.php">Sign out</a></li>
+  </div>
+</ul>
+</header>
 
 <body>
 

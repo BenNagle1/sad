@@ -16,6 +16,7 @@ if (!$db) {
 
 
 $create_db_sql = "CREATE DATABASE IF NOT EXISTS $db_name";
+
 if (!$db->query($create_db_sql)) {
     die("Error creating database: " . $db->error);
 }
@@ -27,33 +28,32 @@ $userTable_check = "SHOW TABLES LIKE '$userTable_name'";
 $userTable_result = mysqli_query($db, $userTable_check);
 
 if (mysqli_num_rows($userTable_result) == 0) {
-    $userTable_create = "CREATE TABLE $userTable_name (
-        `id` int(11) NOT NULL AUTO_INCREMENT,
-        `username` varchar(25) NOT NULL,
-        `salt` varchar(66) NOT NULL,
-        `hashed_password` varchar(66) NOT NULL,
-        `isAdmin` tinyint(4) NOT NULL DEFAULT 0,
-        PRIMARY KEY (`id`)
-      ) ";
-   if (mysqli_query($db, $userTable_create)) {
-        
-    $username = "ADMIN";
-    $password = "SaD_2023!";
-    $salt_length = strlen($password);
-    $salt = generateSalt($salt_length);
-    $hashed_password = hash_password($password, $salt);
-    $hashed_password = mysqli_real_escape_string($db, $hashed_password);
-    $sql = "INSERT INTO $userTable_name (username, salt, hashed_password, isAdmin) VALUES (?, ?, ?, ?)";
-    $statement = mysqli_prepare($db, $sql);
-    $is_admin = 1;
-    mysqli_stmt_bind_param($statement, 'sssi', $username, $salt, $hashed_password, $is_admin);
-    mysqli_stmt_execute($statement);
-   
-    if (!mysqli_query($db, $sql)) {
-        die("Error inserting admin user: " . mysqli_error($db));
-    }
+    $userTable_create = "CREATE TABLE IF NOT EXISTS `$userTable_name` (
+        `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        `username` VARCHAR(255) NOT NULL UNIQUE,
+        `salt` VARCHAR(255) NOT NULL,
+        `hashed_password` VARCHAR(255) NOT NULL,
+        `isAdmin` BOOLEAN NOT NULL DEFAULT 0
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
+
+
+if (mysqli_query($db, $userTable_create)) {
+
+$username = "ADMIN";
+$password = "SaD_2023!";
+$salt_length = strlen($password);
+$salt = generateSalt($salt_length);
+$hashed_password = hash_password($password, $salt);
+$hashed_password = mysqli_real_escape_string($db, $hashed_password);
+$sql = "INSERT INTO $userTable_name (username, salt, hashed_password, isAdmin) VALUES (?, ?, ?, ?)";
+$statement = mysqli_prepare($db, $sql);
+$is_admin = 1;
+mysqli_stmt_bind_param($statement, 'sssi', $username, $salt, $hashed_password, $is_admin);
+if (!mysqli_stmt_execute($statement)) {
+die("Error inserting admin user: " . mysqli_error($db));
+}
 } else {
-    die("Error creating table: " . mysqli_error($db));
+die("Error creating users table: " . mysqli_error($db));
 }
 
     

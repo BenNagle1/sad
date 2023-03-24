@@ -7,6 +7,10 @@ require_once 'functions.php';
 session_start();
 error_reporting(E_ERROR);
 
+if (isset($_GET['message'])) {
+    echo "<p class='success'>" . $_GET['message'] . "</p>";
+}
+
 $error = false;
 $_SESSION['token'] = get_random_string(60); // Generates random token and stores it in session
 
@@ -19,7 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_SESSION['token']) && isset($
         $error = true;
     } else {
         $username = trim($_POST['username']);
-        $username = xss_filter($username);
+        $username = xss_filter($username); 
         $password = trim($_POST['password']);
         
          // Get the user information (id, salt, hashed password) from the users table based on entered username
@@ -96,17 +100,12 @@ function log_login_attempt($username, $status, $ip_address) {
     // Get current timestamp
     $timestamp = date('Y-m-d H:i:s');
 
-
-
-  // Prepare the SQL query
-$sql = "INSERT INTO login_attempts (user_name, status, date, ip_address, user_agent) VALUES (?, ?, ?, ?, ?)";
-// Prepare the statement
-$statement = mysqli_prepare($db, $sql);
-// Bind the parameters
-mysqli_stmt_bind_param($statement, "sssss", $username, $status, $timestamp, $ip_address, $user_agent);
-// Execute the statement
-mysqli_stmt_execute($statement);
-
+// Prepare the SQL query
+$sql = "INSERT INTO login_attempts (user_name, status, date, ip_address, user_agent) VALUES ('$username', '$status', '$timestamp', '$ip_address', '$user_agent')";
+// Execute the query
+mysqli_query($db, $sql);
+// Close the database connection
+mysqli_close($db);
 
 }
 

@@ -1,7 +1,10 @@
-<?php 
+<?php
+
+// Set the maximum session duration to 1 hour (3600 seconds)
+$maxSessionDuration = 3600; 
 // Check if the user is logged in 
 if(isset($_SESSION['username'])) {
-    
+
     // Get the current time 
     $time = time();
 
@@ -18,6 +21,13 @@ if(isset($_SESSION['username'])) {
 
             exit();
 
+        }
+        $activeTime = $time - $_SESSION['last_active'];
+
+        if($activeTime > $maxSessionDuration) {
+            session_destroy();
+            header('Location: login.php');
+            exit();
         }
 
     }
