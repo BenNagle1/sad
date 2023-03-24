@@ -1,3 +1,4 @@
+
 <?php
 session_start(); 
 include "db.inc.php";
@@ -20,8 +21,8 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     $password = mysqli_real_escape_string($db, $_POST['password']);
     $confirm_Password = mysqli_real_escape_string($db, $_POST['confirmpassword']);
 
-    $user_validate = "SELECT * FROM users WHERE username=? LIMIT 1";
-    $statement= mysqli_prepare($db, $user_validate);
+    $check = "SELECT * FROM users WHERE username=? LIMIT 1";
+    $statement= mysqli_prepare($db, $check);
     mysqli_stmt_bind_param($statement, "s", $username);
     mysqli_stmt_execute($statement);
     $result = mysqli_stmt_get_result($statement);
@@ -43,6 +44,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         $password_err2 = "The passwords you entered do not match.";
         $error = true;
     }
+    
 
     if (!$error) {
         $salt_length = strlen($password);

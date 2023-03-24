@@ -48,6 +48,19 @@ input[type=submit]{
     padding: 10px 12px;
 }
 
+.exit{
+    width: 25%;
+    text-decoration: none;
+    background-color: lightgray;
+    border-radius: 14px;
+    border-width: 0;
+    color: black;
+    font-family: sans-serif;
+    font-size: 16px;
+    text-align: center;
+    padding: 10px 12px;
+}
+
 .error{
     color:red;
 }

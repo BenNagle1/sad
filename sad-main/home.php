@@ -22,7 +22,7 @@ if (!isset($_SESSION['username'])) {
 <ul>
 <div class="nav_bar">
   <li><a class="current" href="">Home</a></li>
-  <li><a href="">Account</a></li>
+  <li><a href="change_password.php">Change Password</a></li>
   <li><a href="signout.php">Sign out</a></li>
   </div>
 </ul>

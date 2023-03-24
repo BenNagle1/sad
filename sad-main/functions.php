@@ -27,6 +27,11 @@ function get_random_string($length = 10) {
     return $string;
 }
 
+function verify_password($new_password, $hashed_password, $salt) {
+    $new_password_hash = hash_password($new_password, $salt);
+    return $new_password_hash === $hashed_password;
+}
+
 
 
 

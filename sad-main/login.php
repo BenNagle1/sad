@@ -38,6 +38,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_SESSION['token']) && isset($
                 if ($username === 'ADMIN') {
                     header("Location: login_attempts.php");
                 } else {
+                    $_SESSION['username'] = $username;
+                    $_SESSION['user_id'] = $user['id'];
                     header("Location: home.php");
                 }
                 exit();
@@ -87,11 +89,6 @@ function log_login_attempt($username, $status, $ip_address) {
     // Close the database connection
     mysqli_close($db);
 }
-
-
-
-
-
 
 
 ?>
