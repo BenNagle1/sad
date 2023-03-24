@@ -1,40 +1,42 @@
 <?php
-include 'db.inc.php'; 
-require_once 'functions.php'; 
+header("Cache-Control: no-cache, no-store, must-revalidate"); // HTTP/1.1
+header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
+include 'db.inc.php';
+require_once 'functions.php';
 
 session_start();
-error_reporting(E_ERROR); 
+error_reporting(E_ERROR);
 
-$error = false; 
+$error = false;
 $_SESSION['token'] = get_random_string(60); // Generates random token and stores it in session
 
 // Checks if request method is POST, and if token values match
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_SESSION['token']) && isset($_POST['token']) && isset($_SESSION['token']) == isset($_POST['token']) ) {
-    $user_agent = $_SERVER['HTTP_USER_AGENT']; // gets user agent from HTTP header
+    $user_agent = $_SERVER['HTTP_USER_AGENT'];
 
-    // Check if user has exeeded the max number of login attemps
+     // Check if user has exceeded the max number of login attempts
     if (isset($_SESSION['lockout']) && time() < $_SESSION['lockout']) {
         $error = true;
     } else {
-        $username = trim($_POST['username']); 
-        $username = xss_filter($username); 
-        $password = trim($_POST['password']); 
-
-        // Get the user information (id, salt, hashed password) from the users table based on entered username
+        $username = trim($_POST['username']);
+        $username = xss_filter($username);
+        $password = trim($_POST['password']);
+        
+         // Get the user information (id, salt, hashed password) from the users table based on entered username
         $sql = "SELECT id, salt, hashed_password FROM users WHERE username=?";
-        $statement = mysqli_prepare($db, $sql); 
-        mysqli_stmt_bind_param($statement, "s", $username); 
-        mysqli_stmt_execute($statement); 
-        $result = mysqli_stmt_get_result($statement); //Result of the above query 
+        $statement = mysqli_prepare($db, $sql);
+        mysqli_stmt_bind_param($statement, "s", $username);
+        mysqli_stmt_execute($statement);
+        $result = mysqli_stmt_get_result($statement); //Result of the above query
 
         // Checks there is only one user with the entered username in the DB
         if (mysqli_num_rows($result) == 1) {
-            $user = mysqli_fetch_assoc($result); 
-            $salt = $user['salt']; 
-            $hashed_password = $user['hashed_password']; 
-            $hash_enteredPassword = hash_password($password, $salt); // Hashes the entered password 
+            $user = mysqli_fetch_assoc($result);
+            $salt = $user['salt'];
+            $hashed_password = $user['hashed_password'];
+            $hash_enteredPassword = hash_password($password, $salt); // Hashes the entered password
 
-            //Checks if the entered hashed password matches the hashed password retrieved from the users table in the db
+             //Checks if the entered hashed password matches the hashed password retrieved from the users table in the db
             if ($hashed_password == $hash_enteredPassword) {
                 $_SESSION['username'] = $username;
                 $_SESSION['id'] = $user['id'];
@@ -43,7 +45,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_SESSION['token']) && isset($
 
                 log_login_attempt($username, 'success', $_SERVER['REMOTE_ADDR'], $user_agent); // logs successful login attempt
 
-                // If the usere is ADMIN, they are redirected to the admin home page. Otherwise they are directed to the normal home page/ 
+                // If the user is ADMIN, they are redirected to the admin home page. Otherwise, they are directed to the normal home page.
                 if ($username === 'ADMIN') {
                     header("Location: admin_home.php");
                 } else {
@@ -51,10 +53,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_SESSION['token']) && isset($
                     $_SESSION['user_id'] = $user['id'];
                     header("Location: home.php");
                 }
-                exit(); 
+                exit();
 
             } else {
-                // Increments the user login attempts or sets to 1 if frist wrong attempt
+                  // Increments the user login attempts or sets to 1 if first wrong attempt
                 if (!isset($_SESSION['attempts'])) {
                     $_SESSION['attempts'] = 1;
                 } else {
@@ -63,7 +65,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_SESSION['token']) && isset($
 
                 // Sets the lockout time if login attempts exceed 5
                 if ($_SESSION['attempts'] >= 5) {
-                    $_SESSION['lockout'] = time() + 180; // Locks user out for 3 minutes for 5 failed attempts 
+                    $_SESSION['lockout'] = time() + 180;
                 }
                 $error = true;
 
@@ -93,14 +95,19 @@ function log_login_attempt($username, $status, $ip_address) {
 
     // Get current timestamp
     $timestamp = date('Y-m-d H:i:s');
-    // Prepare the SQL query
-    $sql = "INSERT INTO login_attempts (user_name, status, date, ip_address, user_agent) VALUES (?, ?, ?, ?, ?)";
+
+
+
+  // Prepare the SQL query
+$sql = "INSERT INTO login_attempts (user_name, status, date, ip_address, user_agent) VALUES (?, ?, ?, ?, ?)";
 // Prepare the statement
-    $statement = mysqli_prepare($db, $sql);
+$statement = mysqli_prepare($db, $sql);
 // Bind the parameters
-    mysqli_stmt_bind_param($statement, "sssss", $username, $status, $timestamp, $ip_address, $user_agent);
+mysqli_stmt_bind_param($statement, "sssss", $username, $status, $timestamp, $ip_address, $user_agent);
 // Execute the statement
-    mysqli_stmt_execute($statement);
+mysqli_stmt_execute($statement);
+
+
 }
 
 
@@ -108,6 +115,13 @@ function log_login_attempt($username, $status, $ip_address) {
 
 <!DOCTYPE html>
 <html>
+<script>
+  window.onpageshow = function(event) {
+    if (event.persisted) {
+      window.location.reload();
+    }
+  };
+</script>
 <head>
     <meta charset="UTF-8">
     <title>Welcome</title>
@@ -117,9 +131,6 @@ function log_login_attempt($username, $status, $ip_address) {
    
 
     <form action="login.php" method="POST">
-
-
-
 
 
         <div class="login">
