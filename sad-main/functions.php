@@ -32,12 +32,28 @@ function verify_password($new_password, $hashed_password, $salt) {
     return $new_password_hash === $hashed_password;
 }
 
-function xss_filter($untrusted_input){
-    
-
+function xss_filter($input){
+    $input = preg_replace("/<script>/","", $input);
+    return $input;
 }
 
+function password_check($password) {
+	$check = true;
 
+    $uppercase = preg_match('@[A-Z]@', $password);
+    $lowercase = preg_match('@[a-z]@', $password);
+    $number    = preg_match('@[0-9]@', $password);
+    $specialChars = preg_match('/[\'^£$%&*()}{@#~?><>,|=_+!-]/', $password);
 
+    if(!$uppercase || !$lowercase || !$number || !$specialChars){
+        
+        $check = false; 
+    }
 
+	return $check;
+
+}
 ?>
+
+
+

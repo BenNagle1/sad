@@ -13,7 +13,7 @@ if (!isset($_SESSION['username'])) {
 <html>
 
 <head>
-<title>Welcome - Home</title>
+<title>About Us</title>
  <link rel="stylesheet" type="text/css" href="nav_bar.css">
  <link rel="stylesheet" type="text/css" href="home.css">
 
@@ -21,8 +21,8 @@ if (!isset($_SESSION['username'])) {
 <header>
 <ul>
 <div class="nav_bar">
-  <li><a class="current" href="">Home</a></li>
-  <li><a href="About_Us.php">About Us</a></li>
+  <li><a href="home.php">Home</a></li>
+  <li><a class="current" href="">About Us</a></li>
   <li><a href="change_password.php">Change Password</a></li>
   <li><a href="signout.php">Sign out</a></li>
   </div>
@@ -32,7 +32,7 @@ if (!isset($_SESSION['username'])) {
 <body>
 
 <main>
-<h2>Welcome, <?php echo $_SESSION['username']; ?>!</h2>
+<h2>About Us</h2>
 
 </main>
 

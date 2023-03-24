@@ -4,7 +4,6 @@ session_start();
 include "db.inc.php";
 require_once 'functions.php';
 
-
 $username = "";
 $password = "";
 $confirm_Password = "";
@@ -12,8 +11,6 @@ $username_err =  "";
 $password_err1 = "";
 $password_err2 = "";
 $error = false;
-
-
 
 if($_SERVER["REQUEST_METHOD"] == "POST"){
 
@@ -35,9 +32,9 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         }
     }
 
-    if (strlen($password) < 8) {
+    if (!password_check($password)) {
         $error = true;
-        $password_err1 = "Password must have at least 8 characters.";
+        $password_err1 = "Password must have at least 8 characters, one uppercase letter, one lowercase letter, one number, and one special character.";
     }
 
     if ($password != $confirm_Password) {
@@ -66,8 +63,8 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 }
 
 mysqli_close($db);
-
 ?>
+
 
  
 <!DOCTYPE html>

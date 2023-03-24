@@ -13,6 +13,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_SESSION['token']) && isset($
         $error = true;
     } else {
         $username = trim($_POST['username']);
+        $username = xss_filter($username);
         $password = trim($_POST['password']);
 
         $sql = "SELECT id, salt, hashed_password FROM users WHERE username=?";
