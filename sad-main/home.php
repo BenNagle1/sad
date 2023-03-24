@@ -1,4 +1,8 @@
 <?php 
+
+header("Cache-Control: no-cache, no-store, must-revalidate"); // HTTP/1.1
+header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
+
 session_start(); 
 include 'tracker.php';
 
@@ -11,7 +15,13 @@ if (!isset($_SESSION['username'])) {
 
 ?>
 <html>
-
+<script>
+  window.onpageshow = function(event) {
+    if (event.persisted) {
+      window.location.reload();
+    }
+  };
+</script>
 <head>
 <title>Welcome - Home</title>
  <link rel="stylesheet" type="text/css" href="nav_bar.css">

@@ -33,7 +33,10 @@ function verify_password($new_password, $hashed_password, $salt) {
 }
 
 function xss_filter($input){
-    $input = preg_replace("/<script>/","", $input);
+    $input = preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', '', $input); //remove script tags
+    $input = preg_replace('/(?<!\w)on\w+=/i', '', $input); //remove js elements 
+    $input = preg_replace('/javascript:/i', '', $input); //remove js links
+    $input = preg_replace('/[<>"\'%()&\^$!#\*]/', '', $input); //remove chars common in xss attacks
     return $input;
 }
 
